@@ -1,0 +1,28 @@
+# Ignore source files - only publish dist
+src/
+*.ts
+!*.d.ts
+dist/**/*.map
+
+# Development files
+.gitignore
+.env*
+*.log
+
+# Config files (not needed for users)
+tsconfig.json
+rollup.config.js
+
+# Tests
+*.test.ts
+*.spec.ts
+__tests__/
+coverage/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

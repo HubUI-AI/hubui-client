@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HubUI SDK — Developer Console</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0b;
+      min-height: 100vh;
+      color: #e4e4e7;
+      padding: 2rem;
+    }
+    
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .logo img {
+      width: 28px;
+      height: 28px;
+    }
+    
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+    
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.25rem 0.5rem;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .subtitle {
+      color: #71717a;
+      font-size: 0.875rem;
+    }
+    
+    .demos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .demo-card {
+      background: #18181b;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    
+    .demo-card h2 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #a1a1aa;
+    }
+    
+    .mode-badge {
+      font-size: 0.65rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    
+    .mode-badge.voice {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+    }
+    
+    .mode-badge.text {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 0.875rem;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    }
+    
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #52525b;
+    }
+    
+    .status-dot.connected {
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+    }
+    
+    .status-dot.connecting {
+      background: #eab308;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    
+    .transcript {
+      background: #09090b;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      height: 280px;
+      overflow-y: auto;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .transcript-entry {
+      margin-bottom: 0.75rem;
+      padding: 0.625rem 0.875rem;
+      border-radius: 6px;
+      max-width: 85%;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+    
+    .transcript-entry.user {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      margin-left: auto;
+      text-align: right;
+    }
+    
+    .transcript-entry.agent {
+      background: rgba(39, 39, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    
+    .transcript-entry .speaker {
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.6;
+      margin-bottom: 0.25rem;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      padding: 0.625rem 1rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+    }
+    
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .btn-primary {
+      background: #3b82f6;
+      color: #fff;
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+      background: #2563eb;
+    }
+    
+    .btn-secondary {
+      background: #27272a;
+      color: #e4e4e7;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .btn-secondary:hover:not(:disabled) {
+      background: #3f3f46;
+    }
+    
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .btn-danger:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.25);
+    }
+    
+    .text-input-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .text-input-group input {
+      flex: 1;
+      padding: 0.625rem 0.875rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      background: #09090b;
+      color: #e4e4e7;
+      font-size: 0.875rem;
+    }
+    
+    .text-input-group input::placeholder {
+      color: #52525b;
+    }
+    
+    .text-input-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    }
+    
+    .audio-unlock {
+      display: none;
+      background: rgba(234, 179, 8, 0.1);
+      border: 1px solid rgba(234, 179, 8, 0.2);
+      border-radius: 6px;
+      padding: 0.875rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    .audio-unlock.show {
+      display: block;
+    }
+    
+    .audio-unlock p {
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      color: #fbbf24;
+    }
+    
+    .mute-indicator {
+      display: none;
+      padding: 0.5rem 0.875rem;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #f87171;
+    }
+    
+    .mute-indicator.show {
+      display: block;
+    }
+    
+    .code-section {
+      margin-top: 1.5rem;
+      background: #18181b;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    
+    .code-section h3 {
+      margin-bottom: 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #71717a;
+    }
+    
+    pre {
+      background: #09090b;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 6px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+      font-size: 0.75rem;
+      line-height: 1.6;
+    }
+    
+    code {
+      color: #a1a1aa;
+    }
+    
+    .keyword { color: #f472b6; }
+    .string { color: #a5d6ff; }
+    .function { color: #c084fc; }
+    .comment { color: #52525b; }
+    .property { color: #67e8f9; }
+    
+    .placeholder-text {
+      opacity: 0.4;
+      text-align: center;
+      padding: 3rem 1rem;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo">
+          <img src="logo_whitecircle_blacksymbol_64.png" alt="HubUI">
+          <span class="logo-text">HubUI</span>
+        </div>
+        <span class="badge">SDK Console</span>
+      </div>
+      <p class="subtitle">Test voice and text agent interactions</p>
+    </div>
+    
+    <div class="demos">
+      <!-- Voice Mode Demo -->
+      <div class="demo-card">
+        <h2>
+          Voice Mode
+          <span class="mode-badge voice">Real-time Audio</span>
+        </h2>
+        
+        <div class="status">
+          <span class="status-dot" id="voice-status-dot"></span>
+          <span id="voice-status">Disconnected</span>
+        </div>
+        
+        <div class="audio-unlock" id="voice-audio-unlock">
+          <p>Audio playback is blocked by browser. Click to enable:</p>
+          <button class="btn-secondary" onclick="enableVoiceAudio()">Enable Audio</button>
+        </div>
+        
+        <div class="mute-indicator" id="voice-mute-indicator">
+          Microphone muted
+        </div>
+        
+        <div class="transcript" id="voice-transcript">
+          <p class="placeholder-text">
+            Click "Start Call" to begin a voice session
+          </p>
+        </div>
+        
+        <div class="controls">
+          <button class="btn-primary" id="voice-connect-btn" onclick="connectVoice()">
+            Start Call
+          </button>
+          <button class="btn-secondary" id="voice-mute-btn" onclick="toggleMute()" disabled>
+            Mute
+          </button>
+          <button class="btn-danger" id="voice-disconnect-btn" onclick="disconnectVoice()" disabled>
+            End Call
+          </button>
+        </div>
+      </div>
+      
+      <!-- Text Mode Demo -->
+      <div class="demo-card">
+        <h2>
+          Text Mode
+          <span class="mode-badge text">Streaming Chat</span>
+        </h2>
+        
+        <div class="status">
+          <span class="status-dot" id="text-status-dot"></span>
+          <span id="text-status">Disconnected</span>
+        </div>
+        
+        <div class="transcript" id="text-transcript">
+          <p class="placeholder-text">
+            Click "Connect" to start a text session
+          </p>
+        </div>
+        
+        <div class="text-input-group">
+          <input 
+            type="text" 
+            id="text-input" 
+            placeholder="Type a message..." 
+            disabled
+            onkeypress="if(event.key === 'Enter') sendMessage()"
+          />
+          <button class="btn-primary" id="text-send-btn" onclick="sendMessage()" disabled>
+            Send
+          </button>
+        </div>
+        
+        <div class="controls">
+          <button class="btn-primary" id="text-connect-btn" onclick="connectText()">
+            Connect
+          </button>
+          <button class="btn-danger" id="text-disconnect-btn" onclick="disconnectText()" disabled>
+            Disconnect
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Code Examples -->
+    <div class="code-section">
+      <h3>Integration Example</h3>
+      <pre><code><span class="comment">// Voice Mode</span>
+<span class="keyword">import</span> { HubUI } <span class="keyword">from</span> <span class="string">'@hubui/client'</span>;
+
+<span class="keyword">const</span> session = <span class="keyword">await</span> HubUI.<span class="function">connect</span>({
+  <span class="property">agentId</span>: <span class="string">'your-agent-id'</span>,
+  <span class="property">apiKey</span>: <span class="string">'pk_live_xxxxx'</span>,
+  <span class="property">mode</span>: <span class="string">'voice'</span>,
+  <span class="property">userName</span>: <span class="string">'Demo User'</span>,
+});
+
+session.<span class="function">on</span>(<span class="string">'transcript'</span>, (text, speaker, isFinal) => {
+  <span class="keyword">if</span> (isFinal) console.<span class="function">log</span>(<span class="string">`${speaker}: ${text}`</span>);
+});
+
+<span class="comment">// Text Mode</span>
+<span class="keyword">const</span> textSession = <span class="keyword">await</span> HubUI.<span class="function">connect</span>({
+  <span class="property">agentId</span>: <span class="string">'your-agent-id'</span>,
+  <span class="property">apiKey</span>: <span class="string">'pk_live_xxxxx'</span>,
+  <span class="property">mode</span>: <span class="string">'text'</span>,
+});
+
+textSession.<span class="function">on</span>(<span class="string">'message'</span>, (text) => console.<span class="function">log</span>(<span class="string">'Agent:'</span>, text));
+<span class="keyword">await</span> textSession.<span class="function">send</span>(<span class="string">'Hello!'</span>);</code></pre>
+    </div>
+
+    <!-- Debug Log Section -->
+    <div class="code-section" style="margin-top: 1.5rem;">
+        <h3 style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Debug Logs</span>
+            <button onclick="document.getElementById('debug-log-container').innerHTML=''" style="font-size: 0.7rem; padding: 0.25rem 0.5rem; background: #27272a; border: 1px solid rgba(255,255,255,0.08); color: #a1a1aa; cursor: pointer; border-radius: 4px;">Clear</button>
+        </h3>
+        <div id="debug-log-container" style="background: #09090b; border: 1px solid rgba(255,255,255,0.04); border-radius: 6px; padding: 1rem; height: 240px; overflow-y: auto; font-family: 'SF Mono', Monaco, monospace; font-size: 0.75rem; line-height: 1.5;">
+            <div style="color: #52525b; font-style: italic;">Waiting for logs...</div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Load SDK from dist (after building) -->
+  <script type="module">
+    // ==========================================================================
+    // DEBUG MODE - Set to false to disable console logging
+    // ==========================================================================
+    const DEBUG = true;
+    
+    // --- DEBUG LOGGING SETUP ---
+    const logContainer = document.getElementById('debug-log-container');
+    const originalConsole = { log: console.log, warn: console.warn, error: console.error };
+    
+    function appendLog(type, args) {
+        if (!DEBUG) return;
+        if (!logContainer) return;
+        if (logContainer.children.length === 1 && logContainer.children[0].textContent.includes('Waiting')) {
+             logContainer.innerHTML = '';
+        }
+        
+        const entry = document.createElement('div');
+        entry.style.marginTop = '4px';
+        entry.style.borderBottom = '1px solid #222';
+        entry.style.paddingBottom = '4px';
+        entry.style.wordBreak = 'break-word';
+        
+        const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
+        const timeSpan = document.createElement('span');
+        timeSpan.style.color = '#666';
+        timeSpan.style.marginRight = '8px';
+        timeSpan.textContent = `[${timestamp}]`;
+        
+        const msgSpan = document.createElement('span');
+        if (type === 'error') msgSpan.style.color = '#ff6b6b';
+        else if (type === 'warn') msgSpan.style.color = '#feca57';
+        else msgSpan.style.color = '#a9ead2'; 
+        
+        const text = args.map(arg => {
+            if (typeof arg === 'object') {
+                try { return JSON.stringify(arg); } catch(e) { return String(arg); }
+            }
+            return String(arg);
+        }).join(' ');
+        
+        msgSpan.textContent = text;
+        entry.appendChild(timeSpan);
+        entry.appendChild(msgSpan);
+        logContainer.appendChild(entry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+
+    // Only override console if DEBUG is true
+    if (DEBUG) {
+      console.log = (...args) => { originalConsole.log(...args); appendLog('log', args); };
+      console.warn = (...args) => { originalConsole.warn(...args); appendLog('warn', args); };
+      console.error = (...args) => { originalConsole.error(...args); appendLog('error', args); };
+      
+      window.onerror = (msg, url, line) => {
+          console.error(`Global Error: ${msg} (${url}:${line})`);
+      };
+      
+      console.log('Debug logger initialized (DEBUG=true)');
+    }
+    // ---------------------------
+
+    // For demo purposes, we'll import directly
+    // In production: import { HubUI } from '@hubui/client';
+    
+    // Configuration
+    const CONFIG = {
+      agentId: 'your-agent-id',
+      apiKey: 'pk_live_xxxxx',
+    };
+    
+    let voiceSession = null;
+    let textSession = null;
+    
+    // =========================================================================
+    // Voice Mode Functions
+    // =========================================================================
+    
+    window.connectVoice = async function() {
+      const btn = document.getElementById('voice-connect-btn');
+      const transcriptEl = document.getElementById('voice-transcript');
+      
+      btn.disabled = true;
+      btn.textContent = 'Connecting...';
+      updateVoiceStatus('connecting');
+      
+      try {
+        // Dynamic import from built SDK
+        const { HubUI } = await import('./dist/index.esm.js');
+        
+        console.log('[HubUI] Connecting...');
+        voiceSession = await HubUI.connect({
+          ...CONFIG,
+          mode: 'voice',
+          userName: 'Demo User',
+        });
+        
+        console.log('[HubUI] Session established successfully');
+        console.log('[HubUI] Session state:', voiceSession.state);
+        console.log('[HubUI] Session mode:', voiceSession.mode);
+        
+        // Clear transcript
+        transcriptEl.innerHTML = '';
+        
+        // --- FIX: Update UI immediately since we are already connected ---
+        console.log('[HubUI] Voice connected (initial)');
+        updateVoiceStatus('connected');
+        document.getElementById('voice-mute-btn').disabled = false;
+        document.getElementById('voice-disconnect-btn').disabled = false;
+        btn.style.display = 'none';
+        // -------------------------------------------------------------
+
+        // Event handlers
+        voiceSession.on('connected', () => {
+          console.log('[HubUI] Voice re-connected event');
+        });
+        
+        voiceSession.on('transcript', (text, speaker, isFinal) => {
+          console.log(`[HubUI] Transcript event | speaker=${speaker} | isFinal=${isFinal} | text=${text}`);
+          addToTranscript('voice-transcript', text, speaker, isFinal);
+        });
+        
+        // Also listen for message events (agent text responses)
+        voiceSession.on('message', (text) => {
+          console.log('[HubUI] Message event (voice mode):', text);
+          addToTranscript('voice-transcript', text, 'agent', true);
+        });
+        
+        voiceSession.on('connectionStateChanged', (state) => {
+          console.log('[HubUI] Connection state changed:', state);
+        });
+        
+        voiceSession.on('audioPlaybackBlocked', () => {
+          console.warn('[HubUI] Audio playback blocked');
+          document.getElementById('voice-audio-unlock').classList.add('show');
+        });
+        
+        voiceSession.on('disconnected', () => {
+          console.log('[HubUI] Voice disconnected');
+          updateVoiceStatus('disconnected');
+          resetVoiceControls();
+        });
+        
+        voiceSession.on('error', (error) => {
+          console.error('[HubUI] Voice error:', error);
+          alert('Error: ' + error.message);
+          resetVoiceControls();
+        });
+        
+      } catch (error) {
+        console.error('Connection failed:', error);
+        alert('Failed to connect: ' + error.message);
+        resetVoiceControls();
+      }
+    };
+    
+    window.disconnectVoice = async function() {
+      if (voiceSession) {
+        await voiceSession.disconnect();
+        voiceSession = null;
+      }
+      resetVoiceControls();
+    };
+    
+    window.toggleMute = function() {
+      if (!voiceSession) return;
+      
+      const btn = document.getElementById('voice-mute-btn');
+      const indicator = document.getElementById('voice-mute-indicator');
+      
+      if (voiceSession.isMuted()) {
+        voiceSession.unmute();
+        btn.textContent = 'Mute';
+        indicator.classList.remove('show');
+      } else {
+        voiceSession.mute();
+        btn.textContent = 'Unmute';
+        indicator.classList.add('show');
+      }
+    };
+    
+    window.enableVoiceAudio = async function() {
+      if (voiceSession) {
+        await voiceSession.enableAudio();
+        document.getElementById('voice-audio-unlock').classList.remove('show');
+      }
+    };
+    
+    function updateVoiceStatus(status) {
+      const dot = document.getElementById('voice-status-dot');
+      const text = document.getElementById('voice-status');
+      
+      dot.className = 'status-dot ' + status;
+      text.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    }
+    
+    function resetVoiceControls() {
+      const btn = document.getElementById('voice-connect-btn');
+      btn.disabled = false;
+      btn.textContent = 'Start Call';
+      btn.style.display = 'flex';
+      
+      document.getElementById('voice-mute-btn').disabled = true;
+      document.getElementById('voice-mute-btn').textContent = 'Mute';
+      document.getElementById('voice-disconnect-btn').disabled = true;
+      document.getElementById('voice-mute-indicator').classList.remove('show');
+      document.getElementById('voice-audio-unlock').classList.remove('show');
+      updateVoiceStatus('disconnected');
+    }
+    
+    // =========================================================================
+    // Text Mode Functions
+    // =========================================================================
+    
+    window.connectText = async function() {
+      const btn = document.getElementById('text-connect-btn');
+      const transcriptEl = document.getElementById('text-transcript');
+      
+      btn.disabled = true;
+      btn.textContent = 'Connecting...';
+      updateTextStatus('connecting');
+      
+      try {
+        const { HubUI } = await import('./dist/index.esm.js');
+        
+        console.log('[HubUI] Connecting text...');
+        textSession = await HubUI.connect({
+          ...CONFIG,
+          mode: 'text',
+          userName: 'Demo User',
+        });
+        
+        console.log('[HubUI] Text Session established successfully');
+        console.log('[HubUI] Text session state:', textSession.state);
+        console.log('[HubUI] Text session mode:', textSession.mode);
+
+        // Clear transcript
+        transcriptEl.innerHTML = '';
+        
+        // --- FIX: Update UI immediately since we are already connected ---
+        console.log('[HubUI] Text connected (initial)');
+        updateTextStatus('connected');
+        document.getElementById('text-input').disabled = false;
+        document.getElementById('text-send-btn').disabled = false;
+        document.getElementById('text-disconnect-btn').disabled = false;
+        btn.style.display = 'none';
+        document.getElementById('text-input').focus();
+        // -------------------------------------------------------------
+
+        // Event handlers
+        textSession.on('connected', () => {
+          console.log('[HubUI] Text re-connected event');
+          document.getElementById('text-disconnect-btn').disabled = false;
+          btn.style.display = 'none';
+          document.getElementById('text-input').focus();
+        });
+        
+        textSession.on('message', (text) => {
+          console.log('[HubUI] Message received (text mode):', text);
+          addToTranscript('text-transcript', text, 'agent', true);
+        });
+        
+        // Also listen for transcript events (in case agent uses transcription)
+        textSession.on('transcript', (text, speaker, isFinal) => {
+          console.log(`[HubUI] Transcript event (text mode) | speaker=${speaker} | isFinal=${isFinal} | text=${text}`);
+          // Only add agent transcripts (user messages are already added via send)
+          if (speaker === 'agent' && isFinal) {
+            addToTranscript('text-transcript', text, speaker, true);
+          }
+        });
+        
+        textSession.on('connectionStateChanged', (state) => {
+          console.log('[HubUI] Text connection state changed:', state);
+        });
+        
+        textSession.on('disconnected', () => {
+          console.log('[HubUI] Text disconnected');
+          updateTextStatus('disconnected');
+          resetTextControls();
+        });
+        
+        textSession.on('error', (error) => {
+          console.error('[HubUI] Text error:', error);
+          alert('Error: ' + error.message);
+          resetTextControls();
+        });
+        
+      } catch (error) {
+        console.error('Connection failed:', error);
+        alert('Failed to connect: ' + error.message);
+        resetTextControls();
+      }
+    };
+    
+    window.disconnectText = async function() {
+      if (textSession) {
+        await textSession.disconnect();
+        textSession = null;
+      }
+      resetTextControls();
+    };
+    
+    window.sendMessage = async function() {
+      if (!textSession) return;
+      
+      const input = document.getElementById('text-input');
+      const message = input.value.trim();
+      
+      if (!message) return;
+      
+      // Add to transcript immediately
+      addToTranscript('text-transcript', message, 'user', true);
+      console.log('[HubUI] Sending message:', message);
+      input.value = '';
+      
+      try {
+        await textSession.send(message);
+        console.log('[HubUI] Message sent');
+      } catch (error) {
+        console.error('Send failed:', error);
+      }
+    };
+    
+    function updateTextStatus(status) {
+      const dot = document.getElementById('text-status-dot');
+      const text = document.getElementById('text-status');
+      
+      dot.className = 'status-dot ' + status;
+      text.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    }
+    
+    function resetTextControls() {
+      const btn = document.getElementById('text-connect-btn');
+      btn.disabled = false;
+      btn.textContent = 'Connect';
+      btn.style.display = 'flex';
+      
+      document.getElementById('text-input').disabled = true;
+      document.getElementById('text-input').value = '';
+      document.getElementById('text-send-btn').disabled = true;
+      document.getElementById('text-disconnect-btn').disabled = true;
+      updateTextStatus('disconnected');
+    }
+    
+    // =========================================================================
+    // Shared Functions
+    // =========================================================================
+    
+    // Track current streaming message IDs to prevent duplicates
+    const streamingMessages = {
+      'voice-transcript': null,
+      'text-transcript': null
+    };
+    
+    function addToTranscript(containerId, text, speaker, isFinal, messageId = null) {
+      const container = document.getElementById(containerId);
+      
+      // Generate a message ID if not provided (for streaming deduplication)
+      const msgId = messageId || `${speaker}-${Date.now()}`;
+      
+      // For agent messages, check if this is a streaming update
+      if (speaker === 'agent') {
+        const currentStreamId = streamingMessages[containerId];
+        
+        // If we have an active stream and this is part of it, update the existing entry
+        if (currentStreamId) {
+          const existingEntry = container.querySelector(`[data-msg-id="${currentStreamId}"]`);
+          if (existingEntry) {
+            existingEntry.querySelector('.text').textContent = text;
+            existingEntry.dataset.interim = !isFinal;
+            
+            // Clear stream tracking when final
+            if (isFinal) {
+              streamingMessages[containerId] = null;
+            }
+            container.scrollTop = container.scrollHeight;
+            return;
+          }
+        }
+        
+        // Start tracking a new stream if not final
+        if (!isFinal) {
+          streamingMessages[containerId] = msgId;
+        }
+      }
+      
+      // For interim user results, update the last entry if it's from the same speaker
+      if (!isFinal && speaker === 'user') {
+        const lastEntry = container.querySelector('.transcript-entry:last-child');
+        if (lastEntry && lastEntry.classList.contains(speaker) && lastEntry.dataset.interim === 'true') {
+          lastEntry.querySelector('.text').textContent = text;
+          return;
+        }
+      }
+      
+      const entry = document.createElement('div');
+      entry.className = `transcript-entry ${speaker}`;
+      entry.dataset.interim = !isFinal;
+      entry.dataset.msgId = msgId;
+      entry.innerHTML = `
+        <div class="speaker">${speaker === 'user' ? 'You' : 'Agent'}</div>
+        <div class="text">${text}</div>
+      `;
+      
+      container.appendChild(entry);
+      container.scrollTop = container.scrollHeight;
+      
+      // Track this as the current stream for agent messages
+      if (speaker === 'agent' && !isFinal) {
+        streamingMessages[containerId] = msgId;
+      }
+    }
+  </script>
+</body>
+</html>
