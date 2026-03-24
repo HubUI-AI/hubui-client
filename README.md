@@ -1,10 +1,10 @@
 # @hubui/client
 
-Official JavaScript/TypeScript SDK for [HubUI](https://hubui.ai) — Connect your applications to AI voice and text agents.
+Official JavaScript/TypeScript SDK for [HubUI](https://hubui.ai/?utm_source=github&utm_medium=readme&utm_campaign=hubui-client) — Connect your applications to AI voice and text agents.
 
 **SDK Version: 0.1.0**
 
-[Get Started Free](https://app.hubui.ai) · [Documentation](https://app.hubui.ai/documentation) · [Discord](https://discord.gg/9HZBN6ZeU6)
+[Get Started Free](https://app.hubui.ai/?utm_source=github&utm_medium=readme&utm_campaign=hubui-client) · [Documentation](https://app.hubui.ai/documentation?utm_source=github&utm_medium=readme&utm_campaign=hubui-client) · [Discord](https://discord.gg/9HZBN6ZeU6)
 
 ---
 
@@ -40,8 +40,8 @@ npm install git+https://github.com/HubUI-AI/hubui-client.git
 
 ## Before You Start
 
-- [Free HubUI account](https://app.hubui.ai) (sign up in seconds)
-- Agent created in the [HubUI Dashboard](https://app.hubui.ai)
+- [Free HubUI account](https://app.hubui.ai/?utm_source=github&utm_medium=readme&utm_campaign=hubui-client) (sign up in seconds)
+- Agent created in the [HubUI Dashboard](https://app.hubui.ai/?utm_source=github&utm_medium=readme&utm_campaign=hubui-client)
 - API key (`pk_live_...`) from Dashboard > Settings > API Keys
 - `agentId` from the Agents page
 
@@ -235,10 +235,10 @@ import type {
 
 ## Support
 
-- **[Read the docs](https://app.hubui.ai/documentation)** — full platform documentation
+- **[Read the docs](https://app.hubui.ai/documentation?utm_source=github&utm_medium=readme&utm_campaign=hubui-client)** — full platform documentation
 - **[Join the Discord](https://discord.gg/9HZBN6ZeU6)** — get help, share what you're building
 - Email: info@hubui.ai
-- Dashboard: https://app.hubui.ai
+- Dashboard: https://app.hubui.ai/?utm_source=github&utm_medium=readme&utm_campaign=hubui-client
 
 ## License
 
